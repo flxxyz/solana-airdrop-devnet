@@ -4,6 +4,8 @@
     "zx": "^7.0.8"
   },
   "scripts": {
-    "airdrop": "npx zx solana.mjs"
+    "airdrop": "npx zx solana.mjs",
+    "airdrop:devnet": "NETWORK=devnet npm run airdrop",
+    "airdrop:testnet": "NETWORK=testnet npm run airdrop"
   }
 }

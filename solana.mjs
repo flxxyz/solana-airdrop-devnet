@@ -45,19 +45,20 @@ async function request(i) {
     throw new Error('Not Address');
   }
   const addr = newAddresses[random(0, newAddresses.length - 1)];
-  const config = [
-    {
-      url: TESTNET,
-      amount: 1 * BASE,
-      waiting: 10 * 1000,
-    },
-    {
-      url: DEVNET,
-      amount: 2 * BASE,
-      waiting: 8 * 1000,
-    },
-  ];
-  const cfg = config[i % 2] || config[0];
+  let cfg = {
+    url: DEVNET,
+    amount: 2 * BASE,
+    waiting: 15 * 1000,
+  };
+  switch (process.env.NETWORK) {
+    case 'testnet':
+      cfg = {
+        url: TESTNET,
+        amount: 1 * BASE,
+        waiting: 30 * 1000,
+      };
+      break;
+  }
 
   try {
     const options = {};
@@ -82,7 +83,7 @@ async function request(i) {
     }));
     const content = await result.json();
 
-    if (content.code === -32603) {
+    if (content.error && content.error.code === -32603) {
       ignoreAddress.push(addr);
     }
     console.log(content);
