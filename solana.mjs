@@ -60,7 +60,7 @@ async function request(i) {
     {
       url: DEVNET,
       amount: 2 * BASE,
-      waiting: 10 * 1000,
+      waiting: 8 * 1000,
     },
   ];
   const cfg = config[i % 2] || config[0];
@@ -69,10 +69,10 @@ async function request(i) {
     const options = {};
     if (process.env.PROXY_URL) {
       // Internet environment barrier
-      options.proxyAgent = new HttpsProxyAgent(process.env.PROXY_URL);
+      options.agent = new HttpsProxyAgent(process.env.PROXY_URL);
     }
     
-    const result = await timeout(5000, fetch(cfg.url, {
+    const result = await timeout(30 * 1000, fetch(cfg.url, {
 	...options,
 	method: 'POST',
 	headers: {
