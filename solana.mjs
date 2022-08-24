@@ -1,16 +1,11 @@
 #!/usr/bin/env node
 
 const HttpsProxyAgent = require('https-proxy-agent');
+const localAddress = require('./address.json');
 const localIgnoreAddress = require('./ignoreAddress.json');
 
 // 接收sol的地址
-const addresses = [
-  'FX4uPshuUKe21Ys33xjqaFVG9HkRq2ecvNEU61TppRMr',
-  '7mzxFYbKPwJqgwUxwC8QNM4MpMG3Xp3sUYkX6u2P5fZ',
-  '8JJNC281jK9bXxu6QcSzdEYM15LjbssPTq7UymrtZRTK',
-  'C2wGsGYBEjejcejZTnXgCJvdChBU9LeGVuGCykGzUwUo',
-  'Efb9NkC1o3YnNQPA9rwhRhs4jjPiFxv7PFzNZ4962LH1',
-];
+const addresses = localAddress || [];
 const ignoreAddress = localIgnoreAddress || [];
 
 const BASE = 1000000000;
