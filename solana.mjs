@@ -2,11 +2,10 @@
 
 const HttpsProxyAgent = require('https-proxy-agent');
 const localAddress = require('./address.json');
-const localIgnoreAddress = require('./ignoreAddress.json');
 
 // 接收sol的地址
 const addresses = localAddress || [];
-const ignoreAddress = localIgnoreAddress || [];
+const ignoreAddress = [];
 
 const BASE = 1000000000;
 const TESTNET = "https://api.testnet.solana.com/";
