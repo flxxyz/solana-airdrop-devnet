@@ -1,0 +1,9 @@
+{
+  "dependencies": {
+    "https-proxy-agent": "^5.0.1",
+    "zx": "^7.0.8"
+  },
+  "scripts": {
+    "airdrop": "npx zx solana.mjs"
+  }
+}
