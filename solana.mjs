@@ -84,7 +84,14 @@ async function request(i) {
     const content = await result.json();
 
     if (content.error && content.error.code === -32603) {
-      ignoreAddress.push(addr);
+      switch (content.error.code) {
+        case -32603:
+	  ignoreAddress.push(addr);
+	  break;
+	case 503:
+	  cfg.waiting = 5 * 1000;
+	  break;
+      }
     }
     console.log(content);
   } catch (err) {
