@@ -1,5 +1,7 @@
 # solana-airdrop-devnet
 
+> 🚀Support GitHub Actions scheduled.
+
 ## Install
 
 ```bash
@@ -28,4 +30,3 @@ npm run airdrop:devnet
 # or
 npm run airdrop:testnet
 ```
-

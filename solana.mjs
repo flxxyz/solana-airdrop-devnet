@@ -39,11 +39,12 @@ function timeout(ms, promise) {
   })
 }
 
-async function request(i) {
+async function request() {
   const newAddresses = addresses.filter((address) => !ignoreAddress.includes(address));
   if (newAddresses.length === 0) {
     throw new Error('Not Address');
   }
+
   const addr = newAddresses[random(0, newAddresses.length - 1)];
   let cfg = {
     url: DEVNET,
@@ -55,58 +56,60 @@ async function request(i) {
       cfg = {
         url: TESTNET,
         amount: 1 * BASE,
-        waiting: 30 * 1000,
+        waiting: 15 * 1000,
       };
       break;
   }
 
-  try {
-    const options = {};
-    if (process.env.PROXY_URL) {
-      // Internet environment barrier
-      options.agent = new HttpsProxyAgent(process.env.PROXY_URL);
-    }
-    
-    const result = await timeout(30 * 1000, fetch(cfg.url, {
-	...options,
-	method: 'POST',
-	headers: {
-          'user-agent': "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.36",
-	  'content-type': 'application/json',
-	},
-	body: JSON.stringify({
-          id: uuid(),
-	  jsonrpc: "2.0",
-	  method: "requestAirdrop",
-	  params:[addr, cfg.amount],
-	}),
-    }));
-    const content = await result.json();
-
-    if (content.error && content.error.code === -32603) {
-      switch (content.error.code) {
-        case -32603:
-	  ignoreAddress.push(addr);
-	  break;
-	case 503:
-	  cfg.waiting = 5 * 1000;
-	  break;
-      }
-    }
-    console.log(content);
-  } catch (err) {
-    console.error(err);
+  const options = {};
+  if (process.env.PROXY_URL) {
+    // Internet environment barrier
+    options.agent = new HttpsProxyAgent(process.env.PROXY_URL);
   }
 
-  // rate limit
-  await sleep(cfg.waiting);
+  const result = await timeout(30 * 1000, fetch(cfg.url, {
+    ...options,
+    method: 'POST',
+    headers: {
+      'user-agent': "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.36",
+      'content-type': 'application/json',
+    },
+    body: JSON.stringify({
+      id: uuid(),
+      jsonrpc: "2.0",
+      method: "requestAirdrop",
+      params: [addr, cfg.amount],
+    }),
+  }));
+  const content = await result.json();
 
-  // next request, or exit
-  if ((i - 1) !== 0) {
-    await request(i - 1);
+  if (content.error && content.error.code === -32603) {
+    switch (content.error.code) {
+      case -32603:
+        ignoreAddress.push(addr);
+        break;
+      case 503:
+        cfg.waiting = 5 * 1000;
+        break;
+    }
   }
+  console.log(content);
+
+  return cfg;
 }
 
-// 5000 times!
-await request(5000);
+try {
+  const times = 60; // after 60 minutes
+  const expireDate = Date.now() + (times * 60 * 1000);
+  while (true) {
+    if (Date.now() > expireDate) {
+      throw new Error("Time end");
+    }
 
+    const { waiting } = await request();
+    // rate limit
+    await sleep(waiting);
+  }
+} catch (err) {
+  console.error(err);
+}
